@@ -13,7 +13,7 @@ import random
 
 DATA_URL = 'https://www.eia.gov/totalenergy/data/browser/csv.php?tbl=T10.01'
 BIOFUEL_DATA_START = 1981
-RELEVANT_START = 1981 # Maybe this should be 2007?
+RELEVANT_START = 2010 # Maybe this should be 2010?
 ANNUALIZED_MONTH = 13
 DAYS_IN_MONTH = 30.5
 EXPIRATION = '2024-01'
@@ -98,6 +98,7 @@ history = history.reset_index()
 # calculates the percentage of biofuel consumption relative to total renewable energy consumption
 history["Biofuels Consumption Percent"] = history["Biofuels Consumption"] / history["Total Renewable Energy Consumption"]
 
+print(history)
 # gets the shifts in biofuel consumption
 biofuel_percentage_shifts = get_shifts(history, "Biofuels Consumption Percent")
 
@@ -110,6 +111,7 @@ for i in range(TRIALS):
 outcomes = pd.DataFrame(outcomes, columns=[ "Biofuels Consumption Percent"])
 biofuel_quantile = lambda x: outcomes["Biofuels Consumption Percent"].quantile(x)
 biofuel_percentage = history["Biofuels Consumption Percent"].iloc[-1]
+print("Current: ",biofuel_percentage)
 
 print('5th: ',biofuel_quantile(.05))
 print('10th: ',biofuel_quantile(.1))
@@ -120,8 +122,12 @@ print('60th: ',biofuel_quantile(.6))
 print('75th: ',biofuel_quantile(.75))
 print('90th: ',biofuel_quantile(.9))
 print('95th: ',biofuel_quantile(.95))
+print('98th: ',biofuel_quantile(.96))
+print('99th: ',biofuel_quantile(.97))
 
 # create area chart of biofuel consumption relative to total renewable energy consumption
 sns.set_theme()
 plt.stackplot(history["YYYY"], history["Biofuels Consumption Percent"], labels=["% Biofuels"])
 plt.show()
+
+#history.to_csv('history2.csv',index=False)
